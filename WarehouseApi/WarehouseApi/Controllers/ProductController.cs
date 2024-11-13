@@ -32,7 +32,6 @@ namespace WarehouseApi.Controllers
             {
                 return NotFound();
             }
-
             return product;
         }
 
