@@ -11,6 +11,7 @@ namespace WarehouseApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly WarehouseContext _context;
+
         public ProductController(WarehouseContext context)
         {
             _context = context;
