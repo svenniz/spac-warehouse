@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
+using WarehouseApi.Dto;
 using WarehouseApi.Models;
 
 namespace WarehouseApi.Controllers
@@ -37,12 +38,14 @@ namespace WarehouseApi.Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
         {
+            var product = _productFactory.CreateProduct(product);
+
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProduct), new {id = product.Id}, product);
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
         }
     }
 }

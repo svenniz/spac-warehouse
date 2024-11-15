@@ -21,8 +21,9 @@ builder.Services.AddSwaggerGen();
 //    (options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add MySQL Local Database Context
-builder.Services.AddDbContext<WarehouseContext>(options => {
-    options.UseMySql(builder.Configuration.GetConnectionString("SimplyConnection"), new MySqlServerVersion(new Version(8,0,36)));
+builder.Services.AddDbContext<WarehouseContext>(options =>
+{
+    options.UseMySql(builder.Configuration.GetConnectionString("SimplyTestConnection"), new MySqlServerVersion(new Version(8, 0, 36)));
 });
 
 // ConfigurationServices above
