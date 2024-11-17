@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using WarehouseApi.Data_Access;
 using WarehouseApi.Models;
+using WarehouseApi.Services;
 
 namespace WarehouseApi.Controllers
 {
@@ -11,9 +13,11 @@ namespace WarehouseApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly WarehouseContext _context;
-        public ProductController(WarehouseContext context)
+        private readonly IProductService _service;
+        public ProductController(WarehouseContext context,IProductService service)
         {
             _context = context;
+            _service = service;
         }
 
         // GET: api/products
@@ -34,6 +38,34 @@ namespace WarehouseApi.Controllers
             }
             return product;
         }
+
+        //Search products, example url:
+        // GET: api/products/Search?query[0].Key=Name&query[0].Value=F16&...
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<Product>>> SearchProducts([FromQuery] Dictionary<string,string> query)
+        {
+            //Un-comment if you want the console to show the received query
+            Console.WriteLine("Received Query");
+            foreach (var q in query)
+            {
+                Console.WriteLine($"{q.Key} : {q.Value}");
+            }
+            
+            try
+            {
+                var products = await  _service.GetProductByKeyValuesAsync(query);
+
+                if (products == null || products.Count()==0)
+                    return NotFound();
+                else
+                    return Ok(products);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+       }
+        
 
         // POST: api/products
         [HttpPost]
