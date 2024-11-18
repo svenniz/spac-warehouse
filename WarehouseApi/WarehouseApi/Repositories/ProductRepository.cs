@@ -1,56 +1,62 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
 using WarehouseApi.Models;
 
 namespace WarehouseApi.Repositories
 {
     /// <summary>
-    /// Non-Generic Repository for Products
-    /// Performs persistence layer operations
+    /// Implementation of Non-Generic Repository for Products
+    /// Performs persistence layer operations on Products. Only methods not implemented in GenericEfCoreRepository is implemented here.
     /// </summary>
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : GenericEfCoreRepository<Product>, IProductRepository
     {
-        private readonly WarehouseContext _warehouseContext;
-
-        public ProductRepository(WarehouseContext warehouseContext)
+        private readonly WarehouseContext _context;
+        public ProductRepository(WarehouseContext context) : base(context)
         {
-            _warehouseContext = warehouseContext;
+            _context = context;
         }
 
-        public async Task<IEnumerable<Product>> GetProducts()
+        /// <summary>
+        /// Get Product with Attribute key and value
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Product?> GetProductAsync(int id)
         {
-            return await _warehouseContext.Products.ToListAsync();
+            return await GetProductWithIncludes()
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Product> GetProduct(int productId)
+        /// <summary>
+        /// Get All Products and return list where attribute key and value are included.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            var product = await _warehouseContext.Products.FindAsync(productId);
-            return product;
+            return await GetProductWithIncludes().ToListAsync();
         }
 
-        public async Task<Product> AddProduct(Product product)
+        /// <summary>
+        /// Returns IQueryable to use for Product-specific operations
+        /// </summary>
+        /// <returns></returns>
+        public IQueryable<Product> GetProductWithIncludes()
         {
-            _warehouseContext.Products.Add(product);
-            await _warehouseContext.SaveChangesAsync();
-            return product;
+            return _context.Products
+                .Include(p => p.ProductAttributes)
+                .ThenInclude(pa => pa.ProductAttributeKey)
+                .Include(p => p.ProductAttributes)
+                .ThenInclude(pa => pa.ProductAttributeValue);
         }
 
-        public async Task<Product> UpdateProduct(Product product)
+        public void UpdateProductAsync(Product product)
         {
-            _warehouseContext.Entry(product).State = EntityState.Modified;
-            await _warehouseContext.SaveChangesAsync();
-            return product;
+            _context.Entry(product).State = EntityState.Modified;
         }
 
-        public async void DeleteProduct(int productId)
+        public bool ProductExists(int id)
         {
-            var product = await _warehouseContext.Products.FindAsync(productId);
-
-            if (product != null)
-            {
-                _warehouseContext.Products.Remove(product);
-                await _warehouseContext.SaveChangesAsync();
-            }
+            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

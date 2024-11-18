@@ -2,12 +2,15 @@
 
 namespace WarehouseApi.Repositories
 {
-    public interface IProductRepository
+    /// <summary>
+    /// Non-generic interface for product specific DAL operations
+    /// </summary>
+    public interface IProductRepository : IRepository<Product>
     {
-        Task<Product> AddProduct(Product product);
-        void DeleteProduct(int productId);
-        Task<Product> GetProduct(int productId);
-        Task<IEnumerable<Product>> GetProducts();
-        Task<Product> UpdateProduct(Product product);
+        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<Product?> GetProductAsync(int id);
+        IQueryable<Product> GetProductWithIncludes();
+        bool ProductExists(int id);
+        void UpdateProductAsync(Product product);
     }
 }
