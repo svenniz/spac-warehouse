@@ -31,7 +31,6 @@ namespace WarehouseApi.Services
         /// <param name="IgnoreLength"></param>
         /// <param name="IgnoreCommonTypos"></param>
         /// <param name="Name"></param>
-        /// <param name="Category"></param>
         /// <param name="Description"></param>
         /// <returns></returns>
         public async Task<IEnumerable<Product>> GetProductByFuzzySearch(
@@ -42,26 +41,38 @@ namespace WarehouseApi.Services
             bool IgnoreLength=false,
             bool IgnoreCommonTypos=false,
             bool Name=true,//Search name and category for the string
-            bool Category=false,
             bool Description=false//also search description WARNING SLOW SLOW SLOW!
             )
         {
             //Empty query, or nowhere to look returns empty result
-            if (query.Length == 0 || (!Name && !Category && !Description))
+            if (query.Length == 0 || (!Name && !Description))
                 return new List<Product>();
 
-            //For now, just return anything which matches (maybe it would be better to order them by the qualityt of the match)
-            var myQuery = context.Products.Where(item =>
-            //Short circuit logic in C# means that the Equals or Contains functions are only called if a match has not already been found, and we care about Name, Description or Category
-            //Check Category first, as it is likely the shortest word
-         //   (Category && fuzzyComparer.Equals(item.Category,query,FuzzyLevel,(IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos: FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None) ))||
-            (Name && fuzzyComparer.Equals(item.Name,query,FuzzyLevel,(IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos: FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None) ))||
-            //This is the most expensive operation BY FAR, as Descriptions tend to be long
-            (Description && fuzzyComparer.Contains(item.Description,query,FuzzyLevel,(IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos: FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None) ))
-            
-            );
+            //custom wrapper for the comparison functions, so I don't have to write the options more than once
+            var myEquals= (string? s)=>
+            {
+                if (s == null)
+                    return false;
+                return Name && fuzzyComparer.Equals(s,query,FuzzyLevel,(IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos: FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None) );
+            };
+            var myContains = (string? s)=>
+            {
+                if (s == null)
+                    return false;
 
-            return await myQuery.ToListAsync();
+                return Name && fuzzyComparer.Contains(s,query,FuzzyLevel,(IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos: FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None) );
+            };
+
+            var myQuery = context.Products.AsQueryable();
+
+            //Client side search, this is unfortunately required for custom fuzzy search
+            var clientProducts = await context.Products.ToListAsync();
+
+            //Short circuit logic means the equals or contains functions only get called when they are needed
+            return clientProducts.Where(
+                item => (Name && myEquals(item.Name))||
+                        (Description && myContains(item.Description))
+                ).ToList();
         }
     }
 }

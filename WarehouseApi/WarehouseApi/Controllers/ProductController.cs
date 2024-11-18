@@ -64,14 +64,13 @@ namespace WarehouseApi.Controllers
         /// The fuzzy level tells us how willing we are to accept misspellings, the Ignore options allow us to accept any case, common typos (like number 0 instead of letter O), dublicate letters (like teling vs telling), or not penalise strings with different length
         /// </summary>
         /// <param name="query"></param>
-        /// <param name="FuzzyLevel"></param>
+        /// <param name="FuzzyLevel">Higher levels let more results through (WARNING HIGHER LEVEL MAKES THE SEARCH SLOWER)</param>
         /// <param name="IgnoreCase"></param>
         /// <param name="IgnoreDuplicates"></param>
         /// <param name="IgnoreLength"></param>
         /// <param name="IgnoreCommonTypos"></param>
-        /// <param name="Name"></param>
-        /// <param name="Category"></param>
-        /// <param name="Description"></param>
+        /// <param name="Name">Search name for query</param>
+        /// <param name="Description">Also search description (Slower than Name)</param>
         /// <returns></returns>
         [HttpGet("Search")]
         public async Task<ActionResult<IEnumerable<Product>>> SearchProducts(
@@ -81,9 +80,8 @@ namespace WarehouseApi.Controllers
             [FromQuery]bool IgnoreDuplicates=false,
             [FromQuery]bool IgnoreLength=false,
             [FromQuery]bool IgnoreCommonTypos=false,
-            [FromQuery]bool Name=true,//Search name and category for the string
-            [FromQuery]bool Category=false,
-            [FromQuery]bool Description=false//also search description WARNING SLOW!!!
+            [FromQuery]bool Name=true,//Search name for the string
+            [FromQuery]bool Description=false//also search description WARNING SLOWER THAN NAME!
             )
         {
             try
@@ -95,7 +93,6 @@ namespace WarehouseApi.Controllers
                     IgnoreLength,
                     IgnoreCommonTypos,
                     Name,
-                    Category,
                     Description
                     );
 
