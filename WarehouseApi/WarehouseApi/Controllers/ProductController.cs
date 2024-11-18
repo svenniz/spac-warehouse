@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using WarehouseApi.Data_Access;
+using WarehouseApi.Dto;
+using WarehouseApi.Factories;
 using WarehouseApi.Models;
 using WarehouseApi.Services;
 
@@ -13,26 +15,40 @@ namespace WarehouseApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly WarehouseContext _context;
+        private readonly ProductFactory _productFactory;
         private readonly IProductService _service;
-        public ProductController(WarehouseContext context,IProductService service)
-
+        
+        public ProductController(WarehouseContext context, ProductFactory productFactory, IProductService service)
         {
             _context = context;
+            _productFactory = productFactory;
             _service = service;
         }
-
+        
         // GET: api/products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _context.Products.Include(p => p.ProductAttributes)
+        .ThenInclude(pa => pa.ProductAttributeKey)
+        .Include(p => p.ProductAttributes)
+        .ThenInclude(pa => pa.ProductAttributeValue)
+        .ToListAsync();
+
+        List<ProductDto> productDtos = products.Select(p => _productFactory.CreateProductDto(p)).ToList();
+
+        return Ok(productDtos);
         }
 
         // GET: api/products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.ProductAttributes)
+        .ThenInclude(pa => pa.ProductAttributeKey)
+        .Include(p => p.ProductAttributes)
+        .ThenInclude(pa => pa.ProductAttributeValue)
+        .FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -96,31 +112,52 @@ namespace WarehouseApi.Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
         {
-            _context.Products.Add(product);
+            var newProduct = await _productFactory.CreateProductAsync(product);
+
+            _context.Products.Add(newProduct);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProduct), new {id = product.Id}, product);
+            return CreatedAtAction(nameof(GetProduct), new { id = newProduct.Id }, newProduct);
         }
 
         // PUT: api/products/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateProduct(int id, Product product)
+        public async Task<IActionResult> PutProduct(int id, ProductDto product)
         {
-            if(id != product.Id) 
-            { 
-                return BadRequest(); 
+            if (id != product.Id)
+            {
+                return BadRequest();
             }
-            _context.Entry(product).State = EntityState.Modified;
+
+            var productToUpdate = await _context.Products.Include(p => p.ProductAttributes)
+        .ThenInclude(pa => pa.ProductAttributeKey)
+        .Include(p => p.ProductAttributes)
+        .ThenInclude(pa => pa.ProductAttributeValue)
+        .FirstOrDefaultAsync(p => p.Id == id);
+            if (productToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            var modifiedProduct = await _productFactory.CreateProductAsync(product);
+
+            productToUpdate.ProductNumber = product.ProductNumber;
+            productToUpdate.Name = product.Name;
+            productToUpdate.Description = product.Description;
+            productToUpdate.StockQuantity = product.StockQuantity;
+            productToUpdate.ProductAttributes = modifiedProduct.ProductAttributes;
+
+            _context.Entry(productToUpdate).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException) 
+            catch (DbUpdateConcurrencyException)
             {
-                if(!_context.Products.Any(e=>e.Id == id))
+                if (!ProductExists(id))
                 {
                     return NotFound();
                 }
@@ -129,7 +166,13 @@ namespace WarehouseApi.Controllers
                     throw;
                 }
             }
+
             return NoContent();
+        }
+
+        private bool ProductExists(int id)
+        {
+            return _context.Products.Any(e => e.Id == id);
         }
 
         // DELETE: api/products/5

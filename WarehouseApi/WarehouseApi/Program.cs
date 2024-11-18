@@ -1,5 +1,7 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
+using WarehouseApi.Factories;
 using WarehouseApi.Models;
 using WarehouseApi.Services;
 
@@ -7,8 +9,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
+
 builder.Services.AddScoped<IProductService, ProductService>();//Inject the query service
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,9 +35,11 @@ builder.Services.AddSwaggerGen();
 //    (options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add MySQL Local Database Context
-builder.Services.AddDbContext<WarehouseContext>(options => {
-    options.UseMySql(builder.Configuration.GetConnectionString("SimplyConnection"), new MySqlServerVersion(new Version(8,0,36)));
+builder.Services.AddDbContext<WarehouseContext>(options =>
+{
+    options.UseMySql(builder.Configuration.GetConnectionString("SimplyTestConnection"), new MySqlServerVersion(new Version(8, 0, 36)));
 });
+builder.Services.AddScoped<ProductFactory>();
 
 // ConfigurationServices above
 var app = builder.Build();

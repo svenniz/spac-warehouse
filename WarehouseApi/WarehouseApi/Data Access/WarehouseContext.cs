@@ -5,21 +5,54 @@ namespace WarehouseApi.Data_Access
 {
     public class WarehouseContext : DbContext
     {
-        public WarehouseContext(DbContextOptions<WarehouseContext> options) :base(options)
-        {
-            
-        }
         public DbSet<Product> Products { get; set; } = null!;
+        public DbSet<ProductAttributeKey> ProductAttributeKeys { get; set; } = null!;
+        public DbSet<ProductAttributeValue> ProductAttributeValues { get; set; } = null!;
+        public DbSet<ProductAttributeMapping> ProductAttributeMappings { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Product>(entity => 
+            base.OnModelCreating(modelBuilder);
+
+            // Configure Product
+            modelBuilder.Entity<Product>(entity =>
             {
-                entity.HasKey(p => p.Id).HasName("PRIMARY");
-                entity.ToTable("Products");
+                entity.HasKey(p => p.Id);
+                entity.HasIndex(p => p.ProductNumber).IsUnique();
             });
 
-            base.OnModelCreating(modelBuilder);
+            // Configure ProductAttributeKey
+            modelBuilder.Entity<ProductAttributeKey>(entity =>
+            {
+                entity.HasKey(pak => pak.Id);
+            });
+
+            // Configure ProductAttributeValue
+            modelBuilder.Entity<ProductAttributeValue>(entity =>
+            {
+                entity.HasKey(pav => pav.Id);
+            });
+
+            // Configure ProductAttributeMapping
+            modelBuilder.Entity<ProductAttributeMapping>(entity =>
+            {
+                entity.HasKey(pam => new { pam.ProductId, pam.ProductAttributeKeyId, pam.ProductAttributeValueId });
+
+                entity.HasOne(pam => pam.Product)
+                      .WithMany(p => p.ProductAttributes)
+                      .HasForeignKey(pam => pam.ProductId);
+
+                entity.HasOne(pam => pam.ProductAttributeKey)
+                      .WithMany(pak => pak.ProductAttributeMappings)
+                      .HasForeignKey(pam => pam.ProductAttributeKeyId);
+
+                entity.HasOne(pam => pam.ProductAttributeValue)
+                      .WithMany(pav => pav.ProductAttributeMappings)
+                      .HasForeignKey(pam => pam.ProductAttributeValueId);
+            });
         }
+
+        public WarehouseContext(DbContextOptions<WarehouseContext> options)
+            : base(options) { }
     }
 }
