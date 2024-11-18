@@ -2,12 +2,8 @@
 
 namespace WarehouseApi.Repositories
 {
-    public interface IProductRepository
+    public interface IProductRepository : IRepository<Product>
     {
-        Task<Product> AddProduct(Product product);
-        void DeleteProduct(int productId);
-        Task<Product> GetProduct(int productId);
-        Task<IEnumerable<Product>> GetProducts();
-        Task<Product> UpdateProduct(Product product);
+        public async Task<IEnumerable<Product>> GetAllProducts();
     }
 }
