@@ -3,6 +3,11 @@ using WarehouseApi.Data_Access;
 
 namespace WarehouseApi.Repositories
 {
+    /// <summary>
+    /// Implementation of Generic Repository
+    /// Performs persistence layer operations
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class GenericEfCoreRepository<T> : IRepository<T> where T : class
     {
         private readonly WarehouseContext _context;
@@ -24,7 +29,7 @@ namespace WarehouseApi.Repositories
             _dbSet.Remove(entity);
         }
 
-        public async Task<T?> Get(string id)
+        public async Task<T?> Get(int id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -41,7 +46,7 @@ namespace WarehouseApi.Repositories
 
         public void Update(T entity)
         {
-            throw new NotImplementedException();
+            // No code
         }
     }
 }
