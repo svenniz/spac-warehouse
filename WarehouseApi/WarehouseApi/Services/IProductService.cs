@@ -19,7 +19,6 @@ namespace WarehouseApi.Services
         /// <param name="IgnoreLength"></param>
         /// <param name="IgnoreCommonTypos"></param>
         /// <param name="Name"></param>
-        /// <param name="Category"></param>
         /// <param name="Description"></param>
         /// <returns></returns>
         public Task<IEnumerable<Product>> GetProductByFuzzySearch(
@@ -30,7 +29,6 @@ namespace WarehouseApi.Services
             bool IgnoreLength=false,
             bool IgnoreCommonTypos=false,
             bool Name=true,//Search name and category for the string
-            bool Category=false,
             bool Description=false//also search description WARNING SLOW SLOW SLOW!
             );
     }
