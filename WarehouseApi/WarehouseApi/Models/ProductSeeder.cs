@@ -2,6 +2,7 @@
 
 namespace WarehouseApi.Models
 {
+    /*
     public static class ProductSeeder
     {
         /// <summary>
@@ -36,5 +37,5 @@ namespace WarehouseApi.Models
                 context.SaveChanges();
             }
         }
-    }
+    }*/
 }

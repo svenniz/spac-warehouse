@@ -38,22 +38,49 @@ namespace WarehouseApi.Controllers
             }
             return product;
         }
-
-        //Search products, example url:
-        // GET: api/products/Search?query[0].Key=Name&query[0].Value=F16&...
-        [HttpGet("Search")]
-        public async Task<ActionResult<IEnumerable<Product>>> SearchProducts([FromQuery] Dictionary<string,string> query)
-        {
-            //Un-comment if you want the console to show the received query
-            Console.WriteLine("Received Query");
-            foreach (var q in query)
-            {
-                Console.WriteLine($"{q.Key} : {q.Value}");
-            }
             
+        
+        /// <summary>
+        /// Search function which supports fuzzy search. There is only a single query, which we will search for in the name, category  and description (if the name, category, and description bools are set to do so)
+        /// Be warned that searching description is slow
+        /// 
+        /// The fuzzy level tells us how willing we are to accept misspellings, the Ignore options allow us to accept any case, common typos (like number 0 instead of letter O), dublicate letters (like teling vs telling), or not penalise strings with different length
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="FuzzyLevel"></param>
+        /// <param name="IgnoreCase"></param>
+        /// <param name="IgnoreDuplicates"></param>
+        /// <param name="IgnoreLength"></param>
+        /// <param name="IgnoreCommonTypos"></param>
+        /// <param name="Name"></param>
+        /// <param name="Category"></param>
+        /// <param name="Description"></param>
+        /// <returns></returns>
+        [HttpGet("Search")]
+        public async Task<ActionResult<IEnumerable<Product>>> SearchProducts(
+            [FromQuery]string query,
+            [FromQuery]FuzzyText.FuzzyComparer.Level FuzzyLevel=FuzzyText.FuzzyComparer.Level.Strict,
+            [FromQuery]bool IgnoreCase=true,
+            [FromQuery]bool IgnoreDuplicates=false,
+            [FromQuery]bool IgnoreLength=false,
+            [FromQuery]bool IgnoreCommonTypos=false,
+            [FromQuery]bool Name=true,//Search name and category for the string
+            [FromQuery]bool Category=false,
+            [FromQuery]bool Description=false//also search description WARNING SLOW!!!
+            )
+        {
             try
             {
-                var products = await  _service.GetProductByKeyValuesAsync(query);
+                var products = await  _service.GetProductByFuzzySearch(query,
+                    FuzzyLevel,
+                    IgnoreCase,
+                    IgnoreDuplicates,
+                    IgnoreLength,
+                    IgnoreCommonTypos,
+                    Name,
+                    Category,
+                    Description
+                    );
 
                 if (products == null || products.Count()==0)
                     return NotFound();
@@ -65,7 +92,6 @@ namespace WarehouseApi.Controllers
                 return BadRequest(e.Message);
             }
        }
-        
 
         // POST: api/products
         [HttpPost]

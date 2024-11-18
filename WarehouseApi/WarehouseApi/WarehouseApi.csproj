@@ -25,4 +25,10 @@
     <Folder Include="Factories\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="commonTyposDanish.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -16,8 +16,8 @@ builder.Services.AddSwaggerGen();
 
 //// Add InMemory Database Context
 //WHILE TESTING, un-comment to use InMemory Database
-builder.Services.AddDbContext<WarehouseContext>
-    (opt => opt.UseInMemoryDatabase("Warehouse"));
+//builder.Services.AddDbContext<WarehouseContext>
+//    (opt => opt.UseInMemoryDatabase("Warehouse"));
 
 
 //// Add MySQL Local Database Context
@@ -27,9 +27,9 @@ builder.Services.AddDbContext<WarehouseContext>
 //    (options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add MySQL Local Database Context
-//builder.Services.AddDbContext<WarehouseContext>(options => {
-//    options.UseMySql(builder.Configuration.GetConnectionString("SimplyConnection"), new MySqlServerVersion(new Version(8,0,36)));
-//});
+builder.Services.AddDbContext<WarehouseContext>(options => {
+    options.UseMySql(builder.Configuration.GetConnectionString("SimplyConnection"), new MySqlServerVersion(new Version(8,0,36)));
+});
 
 // ConfigurationServices above
 var app = builder.Build();
@@ -39,22 +39,22 @@ var app = builder.Build();
 //// WARNING, THIS DELETES THE EXISTING DATABASE TABLES! DO NOT USE UNLESS YOU WANT TO DELETE ALL DATA
 ///
 //IDK if this is the best way of seeding a database
-using (var scope = app.Services.CreateScope())
-{
-    
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<WarehouseContext>();
-        context.Seed("MockTestingDatabase.csv");
-    }
-    catch(Exception e)
-    {
-        Console.WriteLine("Error While seeding context");
-        Console.WriteLine(e.Message);
-        return;
-    }
-}
+//using (var scope = app.services.createscope())
+//{
+
+//    var services = scope.serviceprovider;
+//    try
+//    {
+//        var context = services.getrequiredservice<warehousecontext>();
+//        context.seed("mocktestingdatabase.csv");
+//    }
+//    catch (exception e)
+//    {
+//        console.writeline("error while seeding context");
+//        console.writeline(e.message);
+//        return;
+//    }
+//}
 
 
 // Configure the HTTP request pipeline.
