@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
 using WarehouseApi.Factories;
 using WarehouseApi.Models;
+using WarehouseApi.Repositories;
 using WarehouseApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +16,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
     });
 
-builder.Services.AddScoped<IProductService, ProductService>();//Inject the query service
+// Injecting services
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductFactory, ProductFactory>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericEfCoreRepository<>));
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -29,17 +35,16 @@ builder.Services.AddSwaggerGen();
 
 
 //// Add MySQL Local Database Context
-
 //WHILE TESTING, do not use true database
 //builder.Services.AddDbContext<WarehouseContext>
 //    (options => options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add MySQL Local Database Context
+// MySQL Simply test database Context
 builder.Services.AddDbContext<WarehouseContext>(options =>
 {
     options.UseMySql(builder.Configuration.GetConnectionString("SimplyTestConnection"), new MySqlServerVersion(new Version(8, 0, 36)));
 });
-builder.Services.AddScoped<ProductFactory>();
+
 
 // ConfigurationServices above
 var app = builder.Build();
