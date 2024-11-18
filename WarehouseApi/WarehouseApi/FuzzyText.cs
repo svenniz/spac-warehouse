@@ -14,6 +14,7 @@
         //A list of similar letters, which are forgivable if we swap, for example, the key 'a' likely refers to a set which contains s and z (since they are physically next to the a key)
         //The typos are loaded from a file at startup
         //BY THE WAY, in C# char is 16 bits, not 8 bit, so this can include characters like æ,ø and å
+        /// <param name="Category"></param>
         private Dictionary<char, HashSet<char>> CommonTypos = new();
 
         //Use a file to load the fuzzy text comparer
@@ -347,15 +348,10 @@
 
                 //If this is the best so far, also move the starting id of the best
                 int thisScore = Compare(ignoreCase ? a.ToLower() : a, ignoreCase ? b.ToLower() : b, 0, start_idb, 0,MaxCost, SwapCost, TypoCost_similar, TypoCost_different, DuplicateCost, InsertCost, LengthCostBase, ExtraLengthCost, a.Length, a.Length + start_idb);
-                Console.WriteLine($"try {a} in {b.Substring(start_idb,a.Length)} got score {thisScore} ? {bestScore} with max {MaxCost}");
                 if (thisScore < bestScore)
                 {
                     bestScore = thisScore;
                     best_idb = start_idb;
-                }
-                else
-                {
-                    Console.WriteLine($"{a} is not {b.Substring(start_idb,a.Length)} score {thisScore}");
                 }
 
             }
@@ -363,7 +359,6 @@
             //Get the best string
             bestmatch = b.Substring(best_idb, a.Length);
 
-            Console.WriteLine($"Best match of {a} in {b} is : {bestmatch} with {bestScore}");
             return bestScore;
         }
     }
