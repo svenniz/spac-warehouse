@@ -1,0 +1,80 @@
+﻿##Common typos on a danish keyboard, these chars are either physically next to on another (like a and s), or can be gotten by accidentally holding down shift or alt (like 4 $ and ¤ on a danish keyboard), sound similar (like b and p) or look similar (like o and 0)
+##In a fuzzy text comparison, swapping any of these characters should be considered a smaller difference, than swapping two very different characters
+
+##Each line tells us that the first char can be swapped with any of the latter (but the latter are not seen as close to each other)
+
+##For example, the line: 'wesvaW' Tells us that w and a could easilly be swapped, and w and e could also be swapped (both are physically very close to the w key), but it doesn't say anything about a and e
+##The next line 'erd3sE' does not contain w, because w has already been marked as a neighbour of e in the previous line
+
+##Empty lines, and Lines beginning with ## are ignored (if you hadn't guessed)
+
+##The program can not handle non-ascii characters
+
+1!2q
+2#4wqWQ
+3#e4wEW
+4$erER
+5rt6RT
+6ty7&TY
+7yu{/YU
+8ui[(UI
+9])ioIO
+0=}opOP
++?pP
+qwaQ
+wesvaW
+erd3sE
+rtfdR
+tyg1fT
+yuhgY
+uijvhU
+iok1l!jI
+opk0kO
+plblP
+asza@A<
+<>zZ
+><zZ
+sdxzS
+dfczD
+fgvxF
+ghbcG
+hjnvH
+jkmibJ
+kl,nK
+l.1m!L
+zxsc-Z
+xc+* X
+cvz C
+vbuw V
+bnp B
+nm N
+m, M
+,. ;
+.-:
+QWAq
+WESVAw
+ERD3Se
+RTFDr
+TYG1Ft
+YUHGy
+UIJVHu
+IOK1L!Ji
+OPK0Ko
+PLBLp
+ASZA@a<
+SDXZs
+DFCZd
+FGVXf
+GHBCg
+HJNVh
+JKMIBj
+KL,Nk
+L.1M!l
+O0.
+ZXSC-z
+XC+* x
+CVZ c
+VBUW v
+BNP b
+NM n
+M, m
