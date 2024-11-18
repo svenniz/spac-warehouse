@@ -9,7 +9,7 @@ using WarehouseApi.Models;
 
 namespace WarehouseApi.Factories
 {
-    public class ProductFactory
+    public class ProductFactory : IProductFactory
     {
         private readonly WarehouseContext _context;
 

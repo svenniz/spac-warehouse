@@ -5,7 +5,6 @@ namespace WarehouseApi.Repositories
 {
     /// <summary>
     /// Implementation of Generic Repository
-    /// Performs persistence layer operations
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class GenericEfCoreRepository<T> : IRepository<T> where T : class

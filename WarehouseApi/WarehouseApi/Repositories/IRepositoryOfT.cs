@@ -1,7 +1,7 @@
 ﻿namespace WarehouseApi.Repositories
 {
     /// <summary>
-    /// Generic interface for repository
+    /// Generic interface for generic DAL operations
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IRepository<T>
