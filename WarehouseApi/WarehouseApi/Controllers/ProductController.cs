@@ -52,11 +52,14 @@ namespace WarehouseApi.Controllers
             try
             {
                 var product = await _repository.GetProductAsync(id);
+
                 if (product == null)
                 {
                     return NotFound();
                 }
-                return Ok(product);
+
+                var productDto = _productFactory.CreateProductDto(product);
+                return Ok(productDto);
             }
             catch (Exception ex)
             {
