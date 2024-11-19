@@ -40,15 +40,18 @@ namespace WarehouseApi.Data_Access
 
                 entity.HasOne(pam => pam.Product)
                       .WithMany(p => p.ProductAttributes)
-                      .HasForeignKey(pam => pam.ProductId);
+                      .HasForeignKey(pam => pam.ProductId)
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(pam => pam.ProductAttributeKey)
                       .WithMany(pak => pak.ProductAttributeMappings)
-                      .HasForeignKey(pam => pam.ProductAttributeKeyId);
+                      .HasForeignKey(pam => pam.ProductAttributeKeyId)
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(pam => pam.ProductAttributeValue)
                       .WithMany(pav => pav.ProductAttributeMappings)
-                      .HasForeignKey(pam => pam.ProductAttributeValueId);
+                      .HasForeignKey(pam => pam.ProductAttributeValueId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
 
