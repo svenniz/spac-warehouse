@@ -18,6 +18,11 @@ namespace WarehouseApi.Factories
             _context = context;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Product"/> object from the specified <see cref="ProductDto"/>.
+        /// </summary>
+        /// <param name="productDto"></param>
+        /// <returns></returns>
         public async Task<Product> CreateProductAsync(ProductDto productDto)
         {
             var product = new Product
@@ -57,6 +62,11 @@ namespace WarehouseApi.Factories
             return product;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ProductDto"/> object from the specified <see cref="Product"/>.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         public ProductDto CreateProductDto(Product product)
         {
             return new ProductDto
