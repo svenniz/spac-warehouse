@@ -28,7 +28,7 @@ namespace WarehouseApi.Controllers
             _service = service;
             _repository = repository;
         }
-        
+
         // GET: api/products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
@@ -66,14 +66,14 @@ namespace WarehouseApi.Controllers
 
         // POST: api/products
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
+        public async Task<ActionResult<ProductDto>> PostProduct(ProductDto product)
         {
             var newProduct = await _productFactory.CreateProductAsync(product);
 
             _repository.Add(newProduct);
             await _repository.SaveChanges();
 
-            return CreatedAtAction(nameof(GetProduct), new { id = newProduct.Id }, newProduct);
+            return CreatedAtAction(nameof(GetProduct), new { id = newProduct.Id }, product);
         }
 
         // PUT: api/products/5

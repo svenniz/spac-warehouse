@@ -31,8 +31,8 @@ namespace WarehouseApi.Factories
 
             foreach (var attr in productDto.ProductAttributes)
             {
-                var keyName = attr.Keys.First();
-                var valueName = attr.Values.First();
+                var keyName = attr.Key;
+                var valueName = attr.Value;
 
                 var key = await _context.ProductAttributeKeys.FirstOrDefaultAsync(k => k.Name == keyName);
                 if (key == null)
@@ -66,10 +66,10 @@ namespace WarehouseApi.Factories
                 Name = product.Name,
                 Description = product.Description,
                 StockQuantity = product.StockQuantity,
-                ProductAttributes = product.ProductAttributes.Select(attr => new Dictionary<string, string>
+                ProductAttributes = product.ProductAttributes.Select(attr => new ProductAttributeDto
                 {
-                    { "Key", attr.ProductAttributeKey.Name },
-                    { "Value", attr.ProductAttributeValue.Value }
+                    Key = attr.ProductAttributeKey.Name,
+                    Value = attr.ProductAttributeValue.Value
                 }).ToList()
             };
         }
