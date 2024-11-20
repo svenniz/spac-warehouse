@@ -2,6 +2,7 @@
 
 namespace WarehouseApi.Models
 {
+    //Not used in this version, and therefore commented out to avoid accidental deletion
     /*
     public static class ProductSeeder
     {

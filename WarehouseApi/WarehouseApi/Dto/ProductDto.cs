@@ -10,5 +10,5 @@ public class ProductDto
     public string? Description { get; set; }
     public int StockQuantity { get; set; }
 
-    public ICollection<Dictionary<string, string>> ProductAttributes { get; set; } = new List<Dictionary<string, string>>();
+    public ICollection<ProductAttributeDto> ProductAttributes { get; set; } = new List<ProductAttributeDto>();
 }

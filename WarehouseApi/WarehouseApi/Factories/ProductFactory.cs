@@ -18,6 +18,11 @@ namespace WarehouseApi.Factories
             _context = context;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Product"/> object from the specified <see cref="ProductDto"/>.
+        /// </summary>
+        /// <param name="productDto"></param>
+        /// <returns></returns>
         public async Task<Product> CreateProductAsync(ProductDto productDto)
         {
             var product = new Product
@@ -31,8 +36,8 @@ namespace WarehouseApi.Factories
 
             foreach (var attr in productDto.ProductAttributes)
             {
-                var keyName = attr.Keys.First();
-                var valueName = attr.Values.First();
+                var keyName = attr.Key;
+                var valueName = attr.Value;
 
                 var key = await _context.ProductAttributeKeys.FirstOrDefaultAsync(k => k.Name == keyName);
                 if (key == null)
@@ -57,6 +62,11 @@ namespace WarehouseApi.Factories
             return product;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ProductDto"/> object from the specified <see cref="Product"/>.
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
         public ProductDto CreateProductDto(Product product)
         {
             return new ProductDto
@@ -66,10 +76,10 @@ namespace WarehouseApi.Factories
                 Name = product.Name,
                 Description = product.Description,
                 StockQuantity = product.StockQuantity,
-                ProductAttributes = product.ProductAttributes.Select(attr => new Dictionary<string, string>
+                ProductAttributes = product.ProductAttributes.Select(attr => new ProductAttributeDto
                 {
-                    { "Key", attr.ProductAttributeKey.Name },
-                    { "Value", attr.ProductAttributeValue.Value }
+                    Key = attr.ProductAttributeKey.Name,
+                    Value = attr.ProductAttributeValue.Value
                 }).ToList()
             };
         }
