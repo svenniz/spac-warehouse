@@ -28,8 +28,15 @@ namespace WarehouseApi.Controllers
             _service = service;
             _repository = repository;
         }
-        
-        // GET: api/products
+
+
+        /// <summary>
+        /// Retrieves all products from the repository.
+        /// </summary>
+        /// <returns>A list of <see cref="ProductDto"/> objects representing all products.</returns>
+        /// <response code="200">Returns the list of products.</response>
+        /// <response code="500">If an error occurs while retrieving the products.</response>
+        /// <response code="404">Not Found. The product with the specified ID does not exist.</response>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
         {
@@ -45,18 +52,27 @@ namespace WarehouseApi.Controllers
             }
         }
         
-        // GET: api/products/5
+        /// <summary>
+        /// Retrieves a product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to retrieve.</param>
+        /// <returns>An ActionResult containing the product with the specified ID.</returns>
+        /// <response code="200">Returns the product with the specified ID.</response>
+        /// <response code="404">Not Found. The product with the specified ID does not exist.</response>
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
             try
             {
                 var product = await _repository.GetProductAsync(id);
+
                 if (product == null)
                 {
                     return NotFound();
                 }
-                return Ok(product);
+
+                var productDto = _productFactory.CreateProductDto(product);
+                return Ok(productDto);
             }
             catch (Exception ex)
             {
@@ -64,19 +80,33 @@ namespace WarehouseApi.Controllers
             }
         }
 
-        // POST: api/products
+        /// <summary>
+        /// Creates a new product.
+        /// </summary>
+        /// <param name="product">The product to create.</param>
+        /// <returns>An ActionResult containing the created product.</returns>
+        /// <response code="201">Created. The product was successfully created.</response>
+        /// <response code="400">Bad Request. The product was not created.</response>
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(ProductDto product)
+        public async Task<ActionResult<ProductDto>> PostProduct(ProductDto product)
         {
             var newProduct = await _productFactory.CreateProductAsync(product);
 
             _repository.Add(newProduct);
             await _repository.SaveChanges();
 
-            return CreatedAtAction(nameof(GetProduct), new { id = newProduct.Id }, newProduct);
+            return CreatedAtAction(nameof(GetProduct), new { id = newProduct.Id }, product);
         }
 
-        // PUT: api/products/5
+        /// <summary>
+        /// Updates a product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="product">The updated product.</param>
+        /// <returns>An ActionResult containing the updated product.</returns>
+        /// <response code="204">No Content. The product was successfully updated.</response>
+        /// <response code="400">Bad Request. The product was not updated.</response>
+        /// <response code="404">Not Found. The product with the specified ID does not exist.</response>
         [HttpPut("{id}")]
         public async Task<ActionResult<ProductDto>> PutProduct(int id, ProductDto product)
         {
@@ -119,7 +149,13 @@ namespace WarehouseApi.Controllers
             return NoContent();
         }
 
-        // DELETE: api/products/5
+        /// <summary>
+        /// Deletes a product by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>An ActionResult indicating the result of the delete operation.</returns>
+        /// <response code="204">No Content. The product was successfully deleted.</response>
+        /// <response code="404">Not Found. The product with the specified ID does not exist.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProduct(int id)
         {
