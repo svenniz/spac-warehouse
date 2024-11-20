@@ -132,38 +132,45 @@ namespace WarehouseApi.Controllers
             await _repository.SaveChanges();
             
             return NoContent();
-        }                
-                
+        }
+
         /// <summary>
         /// Search function which supports fuzzy search. There is only a single query, which we will search for in the name, category  and description (if the name, category, and description bools are set to do so)
         /// Be warned that searching description is slow
         /// 
         /// The fuzzy level tells us how willing we are to accept misspellings, the Ignore options allow us to accept any case, common typos (like number 0 instead of letter O), dublicate letters (like teling vs telling), or not penalise strings with different length
+        /// 
+        /// The search can also check descriptions for exact matches, or greater than or less than
+        /// 
+        /// The attribute can also refer to StockQuantity or productID
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="Query">String we search for in the description or name, empty query accepts everything (if you only care about attributes)</param>
+        /// <param name="Attributes"> A list containing Key=Value pairs</param>
         /// <param name="FuzzyLevel">Higher levels let more results through (WARNING HIGHER LEVEL MAKES THE SEARCH SLOWER)</param>
-        /// <param name="IgnoreCase"></param>
-        /// <param name="IgnoreDuplicates"></param>
-        /// <param name="IgnoreLength"></param>
-        /// <param name="IgnoreCommonTypos"></param>
+        /// <param name="IgnoreCase">Consider different cases same</param>
+        /// <param name="IgnoreDuplicates">Disregard duplicate letters in misspelling (common mistake for Dyslexic people)</param>
+        /// <param name="IgnoreLength">Use a constant penalty for different length words, instead of a cost per letter length difference</param>
+        /// <param name="IgnoreCommonTypos">Disregard very common typos, such as swapped b and p or swapped 0 and O</param>
         /// <param name="Name">Search name for query</param>
-        /// <param name="Description">Also search description (Slower than Name)</param>
+        /// <param name="Description">Also search description. This is MUCH slower than Name, since descriptions tend to be longer</param>
         /// <returns></returns>
         [HttpGet("Search")]
-        public async Task<ActionResult<IEnumerable<Product>>> SearchProducts(
-            [FromQuery]string query,
-            [FromQuery]FuzzyText.FuzzyComparer.Level FuzzyLevel=FuzzyText.FuzzyComparer.Level.Strict,
-            [FromQuery]bool IgnoreCase=true,
-            [FromQuery]bool IgnoreDuplicates=false,
-            [FromQuery]bool IgnoreLength=false,
-            [FromQuery]bool IgnoreCommonTypos=false,
-            [FromQuery]bool Name=true,//Search name for the string
-            [FromQuery]bool Description=false//also search description WARNING SLOWER THAN NAME!
+        public async Task<ActionResult<IEnumerable<ProductDto>>> SearchProducts(
+            [FromQuery] List<string> Attributes,
+            [FromQuery] string Query="",
+            [FromQuery] FuzzyText.FuzzyComparer.Level FuzzyLevel=FuzzyText.FuzzyComparer.Level.Strict,
+            [FromQuery] bool IgnoreCase=true,
+            [FromQuery] bool IgnoreDuplicates=false,
+            [FromQuery] bool IgnoreLength=false,
+            [FromQuery] bool IgnoreCommonTypos=false,
+            [FromQuery] bool Name=true,//Search name for the string
+            [FromQuery] bool Description=false//also search description WARNING SLOWER THAN NAME!
             )
         {
             try
             {
-                var products = await  _service.GetProductByFuzzySearch(query,
+                var products = await  _service.GetProductByFuzzySearch(Query,
+                    Attributes,
                     FuzzyLevel,
                     IgnoreCase,
                     IgnoreDuplicates,
@@ -177,7 +184,7 @@ namespace WarehouseApi.Controllers
                 
                     return NotFound();
                 else
-                    return Ok(products);
+                    return Ok(products.Select(_productFactory.CreateProductDto).ToList());
             }
             catch (Exception e)
             {
