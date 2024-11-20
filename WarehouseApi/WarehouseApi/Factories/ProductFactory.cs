@@ -1,21 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using WarehouseApi.Data_Access;
 using WarehouseApi.Dto;
 using WarehouseApi.Models;
+using WarehouseApi.Repositories;
 
 namespace WarehouseApi.Factories
 {
     public class ProductFactory : IProductFactory
     {
-        private readonly WarehouseContext _context;
 
-        public ProductFactory(WarehouseContext context)
+        private readonly IRepository<ProductAttributeKey> _attributeKeyRepository;
+        private readonly IRepository<ProductAttributeValue> _attributeValueRepository;
+
+        public ProductFactory(IRepository<ProductAttributeKey> attributeKeyRepository, IRepository<ProductAttributeValue> attributeValueRepository)
         {
-            _context = context;
+            _attributeKeyRepository = attributeKeyRepository;
+            _attributeValueRepository = attributeValueRepository;
         }
 
         /// <summary>
@@ -39,19 +37,8 @@ namespace WarehouseApi.Factories
                 var keyName = attr.Key;
                 var valueName = attr.Value;
 
-                var key = await _context.ProductAttributeKeys.FirstOrDefaultAsync(k => k.Name == keyName);
-                if (key == null)
-                {
-                    key = new ProductAttributeKey { Name = keyName };
-                    _context.ProductAttributeKeys.Add(key);
-                }
-
-                var value = await _context.ProductAttributeValues.FirstOrDefaultAsync(v => v.Value == valueName);
-                if (value == null)
-                {
-                    value = new ProductAttributeValue { Value = valueName, Type = "string" };
-                    _context.ProductAttributeValues.Add(value);
-                }
+                var key = await _attributeKeyRepository.GetOrCreateBySelector(k => k.Name == keyName, () => new ProductAttributeKey { Name = keyName });
+                var value = await _attributeValueRepository.GetOrCreateBySelector(v => v.Value == valueName, () => new ProductAttributeValue { Value = valueName, Type = "string" });
 
                 product.ProductAttributes.Add(new ProductAttributeMapping
                 {

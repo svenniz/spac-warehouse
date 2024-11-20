@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
 
 namespace WarehouseApi.Repositories
@@ -36,6 +37,18 @@ namespace WarehouseApi.Repositories
         public async Task<IEnumerable<T>> GetAll()
         {
             return await _dbSet.ToListAsync();
+        }
+
+        public async Task<T> GetOrCreateBySelector(Expression<Func<T, bool>> selector, Expression<Func<T>> creator)
+        {
+            var item = await _dbSet.FirstOrDefaultAsync(selector);
+            if (item == null)
+            {
+                item = creator.Compile().Invoke();
+                _dbSet.Add(item);
+            }
+
+            return item;
         }
 
         public async Task SaveChanges()
