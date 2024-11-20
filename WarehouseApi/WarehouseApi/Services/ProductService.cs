@@ -105,7 +105,7 @@ namespace WarehouseApi.Services
 
             //Short circuit logic means the equals or contains functions only get called when they are needed
             return clientProducts.Where(
-                item => (Name && myEquals(item.Name)) ||
+                item => (Name && myContains(item.Name)) ||
                         (Description && myContains(item.Description))
                 ).ToList();
         }
