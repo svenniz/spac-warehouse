@@ -197,7 +197,7 @@ namespace WarehouseApi.Controllers
             [FromQuery] FuzzyText.FuzzyComparer.Level FuzzyLevel=FuzzyText.FuzzyComparer.Level.Strict,
             [FromQuery] bool IgnoreCase=true,
             [FromQuery] bool IgnoreDuplicates=false,
-            [FromQuery] bool IgnoreLength=false,
+            [FromQuery] bool Contains=true,
             [FromQuery] bool IgnoreCommonTypos=false,
             [FromQuery] bool Name=true,//Search name for the string
             [FromQuery] bool Description=false//also search description WARNING SLOWER THAN NAME!
@@ -210,7 +210,7 @@ namespace WarehouseApi.Controllers
                     FuzzyLevel,
                     IgnoreCase,
                     IgnoreDuplicates,
-                    IgnoreLength,
+                    Contains,
                     IgnoreCommonTypos,
                     Name,
                     Description
