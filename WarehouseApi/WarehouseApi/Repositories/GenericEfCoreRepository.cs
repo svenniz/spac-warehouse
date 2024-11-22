@@ -1,4 +1,4 @@
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
 
@@ -39,6 +39,12 @@ namespace WarehouseApi.Repositories
             return await _dbSet.ToListAsync();
         }
 
+        /// <summary>
+        /// Gets an entity by a selector or creates it using the provided creator expression if it does not exist.
+        /// </summary>
+        /// <param name="selector">The expression to select the entity.</param>
+        /// <param name="creator">The expression to create a new entity if it does not exist.</param>
+        /// <returns>The existing or newly created entity.</returns>
         public async Task<T> GetOrCreateBySelector(Expression<Func<T, bool>> selector, Expression<Func<T>> creator)
         {
             var item = await _dbSet.FirstOrDefaultAsync(selector);
