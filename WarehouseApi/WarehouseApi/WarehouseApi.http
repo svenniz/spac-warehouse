@@ -1,9 +1,83 @@
-@WarehouseApi_HostAddress = http://localhost:5035
+@WarehouseApi_HostAddress = http://localhost:5035/api
 
-GET {{WarehouseApi_HostAddress}}/weatherforecast/
-Accept: application/json
-###
+### Get all products
 GET {{WarehouseApi_HostAddress}}/product/
 Accept: application/json
 
-###
+### Get product by id
+GET {{WarehouseApi_HostAddress}}/product/13
+Accept: application/json
+
+### Search for products
+GET {{WarehouseApi_HostAddress}}/Product/Search
+?Query=kart%C3%B8ffel
+&FuzzyLevel=1
+&IgnoreCase=true
+&IgnoreDuplicates=false
+&IgnoreLength=false
+&IgnoreCommonTypos=false
+&Name=true
+&Description=true
+Accept: application/json
+
+### Create product
+POST {{WarehouseApi_HostAddress}}/product/
+Content-Type: application/json
+
+{
+    "productNumber": "BS-8776",
+    "name": "Bollesprøjte",
+    "description": "Ikke så frækt, som det lyder. Med udskiftelige dyser til forskellige mønstre.",
+    "stockQuantity": 1276,
+    "productAttributes": [
+      {
+        "key": "Farve",
+        "value": "Bolchestribet"
+      },
+      {
+        "key": "Materiale",
+        "value": "Træ"
+      },
+      {
+        "key": "Materiale",
+        "value": "Jern"
+      }
+    ]
+  }
+
+### Update product
+PUT {{WarehouseApi_HostAddress}}/product/13
+Content-Type: application/json
+
+{
+    "id": 13,
+    "productNumber": "BF201-E",
+    "name": "Titan Kartoffelskræller",
+    "description": "Kartoffelskræller med håndtag af Titan og knivblad af træ.",
+    "stockQuantity": 35,
+    "productAttributes": [
+      {
+        "key": "Farve",
+        "value": "Brun"
+      },
+      {
+        "key": "Materiale",
+        "value": "Træ"
+      },
+      {
+        "key": "Materiale",
+        "value": "Titan"
+      },
+      {
+        "key": "Egnet til gulerødder",
+        "value": "Nej"
+      },
+        {
+            "key": "Egnet til kartofler",
+            "value": "Ikke videre"
+        }
+    ]
+  }
+
+### Delete product
+DELETE {{WarehouseApi_HostAddress}}/product/17
