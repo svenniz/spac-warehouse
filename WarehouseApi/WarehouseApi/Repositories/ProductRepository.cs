@@ -48,12 +48,19 @@ namespace WarehouseApi.Repositories
                 .Include(p => p.ProductAttributes)
                 .ThenInclude(pa => pa.ProductAttributeValue);
         }
-
+        /// <summary>
+        /// Updates product and marks it as dirty
+        /// </summary>
+        /// <param name="product"></param>
         public void UpdateProductAsync(Product product)
         {
             _context.Entry(product).State = EntityState.Modified;
         }
-
+        /// <summary>
+        /// Checks if there are any products with Id
+        /// </summary>
+        /// <param name="id">Product Id</param>
+        /// <returns></returns>
         public bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.Id == id);
