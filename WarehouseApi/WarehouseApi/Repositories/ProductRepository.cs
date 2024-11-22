@@ -37,7 +37,7 @@ namespace WarehouseApi.Repositories
         }
 
         /// <summary>
-        /// Returns IQueryable to use for Product-specific operations
+        /// Returns IQueryable to use for Product-specific operations. Includes Attribute Key and Attribute Value.
         /// </summary>
         /// <returns></returns>
         public IQueryable<Product> GetProductWithIncludes()
