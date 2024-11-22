@@ -41,7 +41,7 @@ namespace WarehouseApi.Services
             FuzzyText.FuzzyComparer.Level FuzzyLevel = FuzzyText.FuzzyComparer.Level.Strict,
             bool IgnoreCase = true,
             bool IgnoreDuplicates = false,
-            bool IgnoreLength = false,
+            bool Contains = true,
             bool IgnoreCommonTypos = false,
             bool Name = true,//Search name and category for the string
             bool Description = false//also search description WARNING SLOW SLOW SLOW!
@@ -90,14 +90,14 @@ namespace WarehouseApi.Services
             {
                 if (s == null)
                     return false;
-                return Name && fuzzyComparer.Equals(s, Query, FuzzyLevel, (IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos : FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None));
+                return fuzzyComparer.Equals(s, Query, FuzzyLevel, (IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos : FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None));
             };
             var myContains = (string? s) =>
             {
                 if (s == null)
                     return false;
 
-                return Name && fuzzyComparer.Contains(s, Query, FuzzyLevel, (IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos : FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None) | (IgnoreLength ? FuzzyText.FuzzyComparer.Options.IgnoreExtraLength : FuzzyText.FuzzyComparer.Options.None));
+                return fuzzyComparer.Contains(s, Query, FuzzyLevel, (IgnoreCase ? FuzzyText.FuzzyComparer.Options.IgnoreCase : FuzzyText.FuzzyComparer.Options.None) | (IgnoreCommonTypos ? FuzzyText.FuzzyComparer.Options.IgnoreCommonTypos : FuzzyText.FuzzyComparer.Options.None) | (IgnoreDuplicates ? FuzzyText.FuzzyComparer.Options.IgnoreDuplicates : FuzzyText.FuzzyComparer.Options.None));
             };
 
             //Client side search, this is unfortunately required for custom fuzzy search
@@ -105,8 +105,8 @@ namespace WarehouseApi.Services
 
             //Short circuit logic means the equals or contains functions only get called when they are needed
             return clientProducts.Where(
-                item => (Name && myContains(item.Name)) ||
-                        (Description && myContains(item.Description))
+                item => (Name && (Contains ? myContains(item.Name) : myEquals(item.Name) )) ||
+                        (Description && (Contains ? myContains(item.Description) : myEquals(item.Description)))
                 ).ToList();
         }
     }

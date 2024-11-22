@@ -208,22 +208,22 @@
                                 minCost = Math.Min(minCost, Compare(a, b, ida + 2, idb + 2,thisCost,MaxCost, SwapCost, TypoCost_similar, TypoCost_different, DuplicateCost, InsertCost, LengthCostBase, ExtraLengthCost, maxAlength, maxBlength) + SwapCost);
                         }
 
-                        if (ida + 1 < maxAlength )//If the id of a is not outside range, check if we have inserted a single char in a, the conditional uses dublicate cost if the previous thing in a was the same as this (for example a=teext and b=text)
+                        if (ida + 1 < maxAlength && maxAlength<=a.Length)//If the id of a is not outside range, check if we have inserted a single char in a, the conditional uses dublicate cost if the previous thing in a was the same as this (for example a=teext and b=text)
                         {
                             //The cost depends if this is a duplication or another kind of insertion
                             int thisCost = Cost+(ida>0 && a[ida-1]==A? DuplicateCost : InsertCost);
                             //Again, only check if it might be better
                             if (thisCost<=minCost)
-                                minCost = Math.Min(minCost, Compare(a, b, ida + 1, idb, thisCost, MaxCost, SwapCost, TypoCost_similar, TypoCost_different, DuplicateCost, InsertCost, LengthCostBase, ExtraLengthCost, maxAlength, maxBlength));
+                                minCost = Math.Min(minCost, Compare(a, b, ida + 1, idb, thisCost, MaxCost, SwapCost, TypoCost_similar, TypoCost_different, DuplicateCost, InsertCost, LengthCostBase, ExtraLengthCost, maxAlength+1, maxBlength));
                         }
-                        if (idb + 1 < maxBlength)//Now check insertions in b
+                        if (idb + 1 < maxBlength && maxBlength<=b.Length)//Now check insertions in b
                         {
 
                             //The cost depends if this is a duplication or another kind of insertion
                             int thisCost = Cost+(idb>0 && b[idb-1]==B? DuplicateCost : InsertCost);
                             //Again, only check if it might be better
                             if (thisCost<=minCost)
-                                minCost = Math.Min(minCost, Compare(a, b, ida, idb+1, thisCost, MaxCost, SwapCost, TypoCost_similar, TypoCost_different, DuplicateCost, InsertCost, LengthCostBase, ExtraLengthCost, maxAlength, maxBlength));
+                                minCost = Math.Min(minCost, Compare(a, b, ida, idb+1, thisCost, MaxCost, SwapCost, TypoCost_similar, TypoCost_different, DuplicateCost, InsertCost, LengthCostBase, ExtraLengthCost, maxAlength, maxBlength+1));
                         }
 
                         return minCost;
