@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
 
@@ -44,7 +44,8 @@ namespace WarehouseApi.Repositories
             var item = await _dbSet.FirstOrDefaultAsync(selector);
             if (item == null)
             {
-                item = creator.Compile().Invoke();
+                var createItem = creator.Compile();
+                item = createItem.Invoke();
                 _dbSet.Add(item);
             }
 
