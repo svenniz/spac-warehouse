@@ -37,6 +37,11 @@ namespace WarehouseApi.Factories
                 var keyName = attr.Key;
                 var valueName = attr.Value;
 
+                if (string.IsNullOrEmpty(keyName) || string.IsNullOrEmpty(valueName))
+                {
+                    continue;
+                }
+
                 var key = await _attributeKeyRepository.GetOrCreateBySelector(k => k.Name == keyName, () => new ProductAttributeKey { Name = keyName });
                 var value = await _attributeValueRepository.GetOrCreateBySelector(v => v.Value == valueName, () => new ProductAttributeValue { Value = valueName, Type = "string" });
 
