@@ -29,7 +29,6 @@ namespace WarehouseApi.Controllers
             _repository = repository;
         }
 
-
         /// <summary>
         /// Retrieves all products from the repository.
         /// </summary>
@@ -73,24 +72,6 @@ namespace WarehouseApi.Controllers
 
                 var productDto = _productFactory.CreateProductDto(product);
                 return Ok(productDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("dto/{id}")]
-        public async Task<ActionResult<ProductDto>> GetProductDto(int id)
-        {
-            try
-            {
-                var product = await _repository.GetProductDto(id);
-                if (product == null)
-                {
-                    return NotFound();
-                }
-                return Ok(product);
             }
             catch (Exception ex)
             {
@@ -243,6 +224,29 @@ namespace WarehouseApi.Controllers
             catch (Exception e)
             {
                 return BadRequest(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("map/{id}")]
+        public async Task<ActionResult<ProductDto>> GetProductFromDto(int id)
+        {
+            try
+            {
+                var product = await _repository.GetProductDto(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
     }
