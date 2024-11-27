@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApi.Data_Access;
+using WarehouseApi.Dto;
 using WarehouseApi.Models;
 
 namespace WarehouseApi.Repositories
@@ -12,9 +14,11 @@ namespace WarehouseApi.Repositories
     public class ProductRepository : GenericEfCoreRepository<Product>, IProductRepository
     {
         private readonly WarehouseContext _context;
-        public ProductRepository(WarehouseContext context) : base(context)
+        private readonly IMapper _mapper;
+        public ProductRepository(WarehouseContext context, IMapper mapper) : base(context)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -27,6 +31,16 @@ namespace WarehouseApi.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public async Task<ProductDto?> GetProductDto(int id)
+        {
+            var product = await GetProductWithIncludes()
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (product == null)
+            {
+                return null;
+            }
+            return _mapper.Map<ProductDto>(product);
+        }
         /// <summary>
         /// Get All Products and return list where attribute key and value are included.
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using WarehouseApi.Models;
+﻿using WarehouseApi.Dto;
+using WarehouseApi.Models;
 
 namespace WarehouseApi.Repositories
 {
@@ -9,6 +10,7 @@ namespace WarehouseApi.Repositories
     {
         Task<IEnumerable<Product>> GetAllProductsAsync();
         Task<Product?> GetProductAsync(int id);
+        Task<ProductDto?> GetProductDto(int id);
         IQueryable<Product> GetProductWithIncludes();
         bool ProductExists(int id);
         void UpdateProductAsync(Product product);

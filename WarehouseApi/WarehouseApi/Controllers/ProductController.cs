@@ -80,6 +80,24 @@ namespace WarehouseApi.Controllers
             }
         }
 
+        [HttpGet("dto/{id}")]
+        public async Task<ActionResult<ProductDto>> GetProductDto(int id)
+        {
+            try
+            {
+                var product = await _repository.GetProductDto(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         /// <summary>
         /// Creates a new product.
         /// </summary>
