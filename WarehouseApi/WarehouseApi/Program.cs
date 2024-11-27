@@ -22,6 +22,8 @@ builder.Services.AddScoped<IProductFactory, ProductFactory>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericEfCoreRepository<>));
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 // Configure CORS to allow any origin
 builder.Services.AddCors(options =>
 {
