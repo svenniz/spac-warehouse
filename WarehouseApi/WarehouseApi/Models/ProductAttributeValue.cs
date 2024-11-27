@@ -10,4 +10,3 @@ public class ProductAttributeValue
 
     public ICollection<ProductAttributeMapping> ProductAttributeMappings { get; set; } = new List<ProductAttributeMapping>();
 }
-
