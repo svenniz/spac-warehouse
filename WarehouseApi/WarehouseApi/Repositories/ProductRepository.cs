@@ -31,6 +31,11 @@ namespace WarehouseApi.Repositories
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        /// <summary>
+        /// Get product by id and return a ProductDto using the MappingProfile and Automapper
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ProductDto?> GetProductDto(int id)
         {
             var product = await GetProductWithIncludes()
@@ -62,6 +67,43 @@ namespace WarehouseApi.Repositories
                 .Include(p => p.ProductAttributes)
                 .ThenInclude(pa => pa.ProductAttributeValue);
         }
+
+        /// <summary>
+        /// Add product using mapper
+        /// </summary>
+        /// <param name="productDto"></param>
+        /// <returns></returns>
+        public async Task<ProductDto?> AddProductFromDto(ProductDto productDto)
+        {
+            if (productDto == null)
+            {
+                return null;
+            }
+            var product = _mapper.Map<Product>(productDto);
+            Add(product);
+
+            return _mapper.Map<ProductDto>(product);
+        }
+
+        /// <summary>
+        /// Update using mapper
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="productdto"></param>
+        /// <returns></returns>
+        public async Task<ProductDto?> UpdateProductFromDto(int id, ProductDto productdto)
+        {
+            var existingProduct = await GetProductWithIncludes()
+                                        .FirstOrDefaultAsync(p => p.Id == id);
+            if (existingProduct == null) 
+            {
+                return null;
+            }
+            _mapper.Map(productdto, existingProduct);
+
+            return _mapper.Map<ProductDto?>(existingProduct);
+        }
+
         /// <summary>
         /// Updates product and marks it as dirty
         /// </summary>
