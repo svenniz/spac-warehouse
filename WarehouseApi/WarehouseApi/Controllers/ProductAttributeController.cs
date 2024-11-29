@@ -23,20 +23,20 @@ namespace WarehouseApi.Controllers
         {
             var keys = await _context.ProductAttributeKeys.ToListAsync();
 
-            var dtos = new List<string>();
+            var attrKeys = new List<string>();
 
             foreach (var key in keys)
             {
-                if (dtos.Contains(key.Name))
+                if (attrKeys.Contains(key.Name))
                 {
                     continue;
                 }
 
-                dtos.Add(key.Name);
+                attrKeys.Add(key.Name);
             }
 
 
-            return dtos;
+            return attrKeys;
         }
 
         // GET: api/ProductAttribute/Value
@@ -45,19 +45,19 @@ namespace WarehouseApi.Controllers
         {
             var values = await _context.ProductAttributeValues.ToListAsync();
 
-            var dtos = new List<string>();
+            var attrValues = new List<string>();
 
             foreach (var value in values)
             {
-                if (dtos.Contains(value.Value))
+                if (attrValues.Contains(value.Value))
                 {
                     continue;
                 }
-                
-                dtos.Add(value.Value);
+
+                attrValues.Add(value.Value);
             }
 
-            return dtos;
+            return attrValues;
         }
     }
 }
