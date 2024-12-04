@@ -10,10 +10,10 @@ namespace WarehouseApi.Repositories
     /// <typeparam name="T"></typeparam>
     public class GenericEfCoreRepository<T> : IRepository<T> where T : class
     {
-        private readonly WarehouseContext _context;
+        private readonly IWarehouseContext _context;
         private DbSet<T> _dbSet;
 
-        public GenericEfCoreRepository(WarehouseContext context)
+        public GenericEfCoreRepository(IWarehouseContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

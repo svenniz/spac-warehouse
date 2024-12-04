@@ -10,5 +10,4 @@
 
         public ICollection<ProductAttributeMapping> ProductAttributes { get; set; } = new List<ProductAttributeMapping>();
     }
-
 }
