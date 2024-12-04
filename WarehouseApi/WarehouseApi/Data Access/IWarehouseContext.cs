@@ -3,9 +3,6 @@ using WarehouseApi.Models;
 
 namespace WarehouseApi.Data_Access
 {
-    /// <summary>
-    /// Mainly for unit testing and mocking a context
-    /// </summary>
     public interface IWarehouseContext
     {
         DbSet<Product> Products { get; set; }
