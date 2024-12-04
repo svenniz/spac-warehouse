@@ -3,7 +3,7 @@ using WarehouseApi.Models;
 
 namespace WarehouseApi.Data_Access
 {
-    public class WarehouseContext : DbContext
+    public class WarehouseContext : DbContext, IWarehouseContext
     {
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<ProductAttributeKey> ProductAttributeKeys { get; set; } = null!;
@@ -57,5 +57,15 @@ namespace WarehouseApi.Data_Access
 
         public WarehouseContext(DbContextOptions<WarehouseContext> options)
             : base(options) { }
+
+        // SaveChangesAsync and SaveChanges
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            return base.SaveChangesAsync(cancellationToken);
+        }
+        public override int SaveChanges()
+        {
+            return base.SaveChanges();
+        }
     }
 }
